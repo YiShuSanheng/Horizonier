@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>穷 万物理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #2D5016;
+            --warm-white: #FAFAFA;
+            --amber-gold: #D4A574;
+            --charcoal: #2C2C2C;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--warm-white);
+            color: var(--charcoal);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-green);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: var(--primary-green);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .resource-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(45, 80, 22, 0.1);
+        }
+        
+        .category-filter {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .category-filter:hover {
+            transform: scale(1.05);
+        }
+        
+        .category-filter.active {
+            background-color: var(--primary-green);
+            color: white;
+        }
+        
+        .favorite-btn {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .favorite-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .favorite-btn.active {
+            color: #ef4444;
+        }
+        
+        .link-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-semibold text-gray-800">Horizonier</h1>
+                    <span class="ml-2 text-sm text-gray-500">究 万物理</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="nav-link text-gray-700 hover:text-green-700">Singularity</a>
+                    <a href="blog.html" class="nav-link text-gray-700 hover:text-green-700">写 百卷书</a>
+                    <a href="gallery.html" class="nav-link text-gray-700 hover:text-green-700">行 千里路</a>
+                    <a href="resources.html" class="nav-link text-gray-700 hover:text-green-700">究 万物理</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-700 hover:text-green-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="index.html" class="nav-link text-gray-700 hover:text-green-700">Singularity</a>
+                <a href="blog.html" class="nav-link text-gray-700 hover:text-green-700">写 百卷书</a>
+                <a href="gallery.html" class="nav-link text-gray-700 hover:text-green-700">行 千里路</a>
+                <a href="resources.html" class="nav-link text-gray-700 hover:text-green-700">究 万物理</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 页面标题 -->
+    <section class="pt-24 pb-12 bg-gradient-to-br from-green-50 to-amber-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-5xl font-bold text-gray-800 mb-4" style="font-family: 'Playfair Display', serif;">生物资源库</h1>
+            <p class="text-xl text-gray-600 mb-8">精选生物学相关网站与工具，助力科研之路</p>
+            
+            <!-- 搜索框 -->
+            <div class="max-w-md mx-auto">
+                <input type="text" id="search-input" placeholder="搜索资源..." 
+                       class="w-full px-6 py-3 rounded-full border border-gray-300 focus:outline-none focus:border-green-500">
+            </div>
+        </div>
+    </section>
+
+    <!-- 统计信息 -->
+    <section class="py-8 bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="text-3xl font-bold text-green-700 mb-2">50+</div>
+                    <div class="text-gray-600">精选资源</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-3xl font-bold text-green-700 mb-2">8</div>
+                    <div class="text-gray-600">资源分类</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-3xl font-bold text-green-700 mb-2">24/7</div>
+                    <div class="text-gray-600">在线访问</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-3xl font-bold text-green-700 mb-2">100%</div>
+                    <div class="text-gray-600">免费资源</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 分类筛选器 -->
+    <section class="py-8 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap justify-center gap-4">
+                <button class="category-filter active bg-green-700 text-white px-6 py-3 rounded-full font-medium" data-category="all">
+                    全部资源
+                </button>
+                <button class="category-filter bg-white text-gray-700 px-6 py-3 rounded-full font-medium border border-gray-300 hover:border-green-700" data-category="journals">
+                    学术期刊
+                </button>
+                <button class="category-filter bg-white text-gray-700 px-6 py-3 rounded-full font-medium border border-gray-300 hover:border-green-700" data-category="databases">
+                    数据库
+                </button>
+                <button class="category-filter bg-white text-gray-700 px-6 py-3 rounded-full font-medium border border-gray-300 hover:border-green-700" data-category="tools">
+                    研究工具
+                </button>
+                <button class="category-filter bg-white text-gray-700 px-6 py-3 rounded-full font-medium border border-gray-300 hover:border-green-700" data-category="institutions">
+                    研究机构
+                </button>
+                <button class="category-filter bg-white text-gray-700 px-6 py-3 rounded-full font-medium border border-gray-300 hover:border-green-700" data-category="education">
+                    教育资源
+                </button>
+                <button class="category-filter bg-white text-gray-700 px-6 py-3 rounded-full font-medium border border-gray-300 hover:border-green-700" data-category="communities">
+                    学术社区
+                </button>
+                <button class="category-filter bg-white text-gray-700 px-6 py-3 rounded-full font-medium border border-gray-300 hover:border-green-700" data-category="software">
+                    软件工具
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 资源网格 -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div id="resources-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- 学术期刊 -->
+                <div class="resource-card bg-white rounded-xl shadow-lg p-6" data-category="journals" data-title="Nature" data-description="世界顶级科学期刊，涵盖生物学各领域最新研究成果">
+                    <div class="link-icon bg-red-100 text-red-600">📖</div>
+                    <div class="flex items-start justify-between mb-3">
+                        <h3 class="font-semibold text-gray-800 text-lg">Nature</h3>
+                        <button class="favorite-btn text-gray-400 hover:text-red-500" onclick="toggleFavorite(this)">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">世界顶级科学期刊，涵盖生物学各领域最新研究成果</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">学术期刊</span>
+                        <a href="https://www.nature.com" target="_blank" class="text-green-700 hover:text-green-800 text-sm font-medium">
+                            访问网站 →
+                        </a>
+                    </div>
+                </div>
+
+                <div class="resource-card bg-white rounded-xl shadow-lg p-6" data-category="journals" data-title="Science" data-description="美国科学促进会官方期刊，发表突破性科学研究">
+                    <div class="link-icon bg-blue-100 text-blue-600">🔬</div>
+                    <div class="flex items-start justify-between mb-3">
+                        <h3 class="font-semibold text-gray-800 text-lg">Science</h3>
+                        <button class="favorite-btn text-gray-400 hover:text-red-500" onclick="toggleFavorite(this)">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">美国科学促进会官方期刊，发表突破性科学研究</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">学术期刊</span>
+                        <a href="https://www.science.org" target="_blank" class="text-green-700 hover:text-green-800 text-sm font-medium">
+                            访问网站 →
+                        </a>
+                    </div>
+                </div>
+
+                <div class="resource-card bg-white rounded-xl shadow-lg p-6" data-category="journals" data-title="Cell" data-description="细胞生物学领域的顶级期刊，专注分子细胞生物学研究">
+                    <div class="link-icon bg-green-100 text-green-600">🧬</div>
+                    <div class="flex items-start justify-between mb-3">
+                        <h3 class="font-semibold text-gray-800 text-lg">Cell</h3>
+                        <button class="favorite-btn text-gray-400 hover:text-red-500" onclick="toggleFavorite(this)">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">细胞生物学领域的顶级期刊，专注分子细胞生物学研究</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">学术期刊</span>
+                        <a href="https://www.cell.com" target="_blank" class="text-green-700 hover:text-green-800 text-sm font-medium">
+                            访问网站 →
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 数据库 -->
+                <div class="resource-card bg-white rounded-xl shadow-lg p-6" data-category="databases" data-title="NCBI" data-description="美国国家生物技术信息中心，提供生物信息学数据库和工具">
+                    <div class="link-icon bg-purple-100 text-purple-600">🗄️</div>
+                    <div class="flex items-start justify-between mb-3">
+                        <h3 class="font-semibold text-gray-800 text-lg">NCBI</h3>
+                        <button class="favorite-btn text-gray-400 hover:text-red-500" onclick="toggleFavorite(this)">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">美国国家生物技术信息中心，提供生物信息学数据库和工具</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">数据库</span>
+                        <a href="https://www.ncbi.nlm.nih.gov" target="_blank" class="text-green-700 hover:text-green-800 text-sm font-medium">
+                            访问网站 →
+                        </a>
+                    </div>
+                </div>
+
+                <div class="resource-card bg-white rounded-xl shadow-lg p-6" data-category="databases" data-title="UniProt" data-description="蛋白质序列和功能信息数据库，提供全面的蛋白质数据">
+                    <div class="link-icon bg-indigo-100 text-indigo-600">🧩</div>
+                    <div class="flex items-start justify-between mb-3">
+                        <h3 class="font-semibold text-gray-800 text-lg">UniProt</h3>
+                        <button class="favorite-btn text-gray-400 hover:text-red-500" onclick="toggleFavorite(this)">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">蛋白质序列和功能信息数据库，提供全面的蛋白质数据</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">数据库</span>
+                        <a href="https://www.uniprot.org" target="_blank" class="text-green-700 hover:text-green-800 text-sm font-medium">
+                            访问网站 →
+                        </a>
+                    </div>
+                </div>
+
+                <div class="resource-card bg-white rounded-xl shadow-lg p-6" data-category="databases" data-title="Ensembl" data-description="基因组浏览器，提供脊椎动物基因组注释信息">
+                    <div class="link-icon bg-teal-100 text-teal-600">🧬</div>
+                    <div class="flex items-start justify-between mb-3">
+                        <h3 class="font-semibold text-gray-800 text-lg">Ensembl</h3>
+                        <button class="favorite-btn text-gray-400 hover:text-red-500" onclick="toggleFavorite(this)">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">基因组浏览器，提供脊椎动物基因组注释信息</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">数据库</span>
+                        <a href="https://www.ensembl.org" target="_blank" class="text-green-700 hover:text-green-800 text-sm font-medium">
+                            访问网站 →
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 研究工具 -->
+                <div class="resource-card bg-white rounded-xl shadow-lg p-6" data-category="tools" data-title="BLAST" data-description="序列比对工具，用于比较生物序列的相似性">
+                    <div class="link-icon bg-yellow-100 text-yellow-600">⚡</div>
+                    <div class="flex items-start justify-between mb-3">
+                        <h3 class="font-semibold text-gray-800 text-lg">BLAST</h3>
+                        <button class="favorite-btn text-gray-400 hover:text-red-500" onclick="toggleFavorite(this)">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">序列比对工具，用于比较生物序列的相似性</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">研究工具</span>
+                        <a href="https://blast.ncbi.nlm.nih.gov" target="_blank" class="text-green-700 hover:text-green-800 text-sm font-medium">
+                            访问网站 →
+                        </a>
+                    </div>
+                </div>
+
+                <div class="resource-card bg-white rounded-xl shadow-lg p-6" data-category="tools" data-title="Primer3" data-description="PCR引物设计工具，帮助设计特异性引物">
+                    <div class="link-icon bg-orange-100 text-orange-600">🔧</div>
+                    <div class="flex items-start justify-between mb-3">
+                        <h3 class="font-semibold text-gray-800 text-lg">Primer3</h3>
+                        <button class="favorite-btn text-gray-400 hover:text-red-500" onclick="toggleFavorite(this)">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">PCR引物设计工具，帮助设计特异性引物</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">研究工具</span>
+                        <a href="http://primer3.ut.ee" target="_blank" class="text-green-700 hover:text-green-800 text-sm font-medium">
+                            访问网站 →
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 研究机构 -->
+                <div class="resource-card bg-white rounded-xl shadow-lg p-6" data-category="institutions" data-title="中科院" data-description="中国科学院，中国自然科学最高学术机构">
+                    <div class="link-icon bg-red-100 text-red-600">🏛️</div>
+                    <div class="flex items-start justify-between mb-3">
+                        <h3 class="font-semibold text-gray-800 text-lg">中科院</h3>
+                        <button class="favorite-btn text-gray-400 hover:text-red-500" onclick="toggleFavorite(this)">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">中国科学院，中国自然科学最高学术机构</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">研究机构</span>
+                        <a href="http://www.cas.cn" target="_blank" class="text-green-700 hover:text-green-800 text-sm font-medium">
+                            访问网站 →
+                        </a>
+                    </div>
+                </div>
+
+                <div class="resource-card bg-white rounded-xl shadow-lg p-6" data-category="institutions" data-title="NIH" data-description="美国国立卫生研究院，世界顶尖的医学研究机构">
+                    <div class="link-icon bg-blue-100 text-blue-600">🏥</div>
+                    <div class="flex items-start justify-between mb-3">
+                        <h3 class="font-semibold text-gray-800 text-lg">NIH</h3>
+                        <button class="favorite-btn text-gray-400 hover:text-red-500" onclick="toggleFavorite(this)">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">美国国立卫生研究院，世界顶尖的医学研究机构</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">研究机构</span>
+                        <a href="https://www.nih.gov" target="_blank" class="text-green-700 hover:text-green-800 text-sm font-medium">
+                            访问网站 →
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 教育资源 -->
+                <div class="resource-card bg-white rounded-xl shadow-lg p-6" data-category="education" data-title="Khan Academy" data-description="免费在线教育平台，提供生物学等科目的视频教程">
+                    <div class="link-icon bg-green-100 text-green-600">🎓</div>
+                    <div class="flex items-start justify-between mb-3">
+                        <h3 class="font-semibold text-gray-800 text-lg">Khan Academy</h3>
+                        <button class="favorite-btn text-gray-400 hover:text-red-500" onclick="toggleFavorite(this)">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">免费在线教育平台，提供生物学等科目的视频教程</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">教育资源</span>
+                        <a href="https://www.khanacademy.org" target="_blank" class="text-green-700 hover:text-green-800 text-sm font-medium">
+                            访问网站 →
+                        </a>
+                    </div>
+                </div>
+
+                <div class="resource-card bg-white rounded-xl shadow-lg p-6" data-category="education" data-title="MIT OpenCourseWare" data-description="麻省理工学院开放课程，免费获取高质量教育资源">
+                    <div class="link-icon bg-purple-100 text-purple-600">📚</div>
+                    <div class="flex items-start justify-between mb-3">
+                        <h3 class="font-semibold text-gray-800 text-lg">MIT OpenCourseWare</h3>
+                        <button class="favorite-btn text-gray-400 hover:text-red-500" onclick="toggleFavorite(this)">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">麻省理工学院开放课程，免费获取高质量教育资源</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">教育资源</span>
+                        <a href="https://ocw.mit.edu" target="_blank" class="text-green-700 hover:text-green-800 text-sm font-medium">
+                            访问网站 →
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 学术社区 -->
+                <div class="resource-card bg-white rounded-xl shadow-lg p-6" data-category="communities" data-title="ResearchGate" data-description="科研社交网络，连接全球科学家和研究人员">
+                    <div class="link-icon bg-blue-100 text-blue-600">👥</div>
+                    <div class="flex items-start justify-between mb-3">
+                        <h3 class="font-semibold text-gray-800 text-lg">ResearchGate</h3>
+                        <button class="favorite-btn text-gray-400 hover:text-red-500" onclick="toggleFavorite(this)">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">科研社交网络，连接全球科学家和研究人员</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">学术社区</span>
+                        <a href="https://www.researchgate.net" target="_blank" class="text-green-700 hover:text-green-800 text-sm font-medium">
+                            访问网站 →
+                        </a>
+                    </div>
+                </div>
+
+                <div class="resource-card bg-white rounded-xl shadow-lg p-6" data-category="communities" data-title="Academia.edu" data-description="学术分享平台，促进学术交流和合作">
+                    <div class="link-icon bg-indigo-100 text-indigo-600">🎓</div>
+                    <div class="flex items-start justify-between mb-3">
+                        <h3 class="font-semibold text-gray-800 text-lg">Academia.edu</h3>
+                        <button class="favorite-btn text-gray-400 hover:text-red-500" onclick="toggleFavorite(this)">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">学术分享平台，促进学术交流和合作</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">学术社区</span>
+                        <a href="https://www.academia.edu" target="_blank" class="text-green-700 hover:text-green-800 text-sm font-medium">
+                            访问网站 →
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 软件工具 -->
+                <div class="resource-card bg-white rounded-xl shadow-lg p-6" data-category="software" data-title="R" data-description="统计计算和图形绘制的编程语言，广泛用于生物统计分析">
+                    <div class="link-icon bg-gray-100 text-gray-600">📊</div>
+                    <div class="flex items-start justify-between mb-3">
+                        <h3 class="font-semibold text-gray-800 text-lg">R</h3>
+                        <button class="favorite-btn text-gray-400 hover:text-red-500" onclick="toggleFavorite(this)">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">统计计算和图形绘制的编程语言，广泛用于生物统计分析</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">软件工具</span>
+                        <a href="https://www.r-project.org" target="_blank" class="text-green-700 hover:text-green-800 text-sm font-medium">
+                            访问网站 →
+                        </a>
+                    </div>
+                </div>
+
+                <div class="resource-card bg-white rounded-xl shadow-lg p-6" data-category="software" data-title="ImageJ" data-description="图像处理软件，特别适用于科学图像分析">
+                    <div class="link-icon bg-green-100 text-green-600">🖼️</div>
+                    <div class="flex items-start justify-between mb-3">
+                        <h3 class="font-semibold text-gray-800 text-lg">ImageJ</h3>
+                        <button class="favorite-btn text-gray-400 hover:text-red-500" onclick="toggleFavorite(this)">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">图像处理软件，特别适用于科学图像分析</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">软件工具</span>
+                        <a href="https://imagej.nih.gov" target="_blank" class="text-green-700 hover:text-green-800 text-sm font-medium">
+                            访问网站 →
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 无结果提示 -->
+            <div id="no-results" class="hidden text-center py-16">
+                <div class="text-gray-400 mb-4">
+                    <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-600 mb-2">未找到相关资源</h3>
+                <p class="text-gray-500">请尝试其他搜索关键词或分类筛选</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 我的收藏 -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">我的收藏</h2>
+                <p class="text-gray-600">快速访问您收藏的资源</p>
+            </div>
+            
+            <div id="favorites-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- 收藏的资源将在这里显示 -->
+            </div>
+            
+            <div id="no-favorites" class="text-center py-12">
+                <div class="text-gray-400 mb-4">
+                    <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-600 mb-2">暂无收藏</h3>
+                <p class="text-gray-500">点击资源卡片上的心形图标来收藏您喜欢的资源</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-semibold mb-4">Hi！Horizonier</h3>
+                <p class="text-gray-400 mb-6">非典型理工科生</p>
+                <div class="flex justify-center space-x-6 mb-8">
+                    <a href="mailto:dr.chen@example.com" class="text-gray-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                </div>
+                <div class="border-t border-gray-700 pt-8">
+                    <p class="text-gray-400 text-sm">
+                        © 2025 Horizonier. 保留所有权利。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 资源管理功能
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initResources();
+            initMobileMenu();
+            updateFavoritesDisplay();
+        });
+
+        function initResources() {
+            const filterBtns = document.querySelectorAll('.category-filter');
+            const resourceCards = document.querySelectorAll('.resource-card');
+            const searchInput = document.getElementById('search-input');
+            const noResults = document.getElementById('no-results');
+
+            // 筛选功能
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 更新按钮状态
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const category = this.dataset.category;
+                    filterResources(category, searchInput.value);
+                });
+            });
+
+            // 搜索功能
+            searchInput.addEventListener('input', function() {
+                const activeCategory = document.querySelector('.category-filter.active').dataset.category;
+                filterResources(activeCategory, this.value);
+            });
+
+            function filterResources(category, searchTerm) {
+                let visibleCount = 0;
+                
+                resourceCards.forEach(card => {
+                    const cardCategory = card.dataset.category;
+                    const cardTitle = card.dataset.title.toLowerCase();
+                    const cardDescription = card.dataset.description.toLowerCase();
+                    const searchTermLower = searchTerm.toLowerCase();
+
+                    const categoryMatch = category === 'all' || cardCategory === category;
+                    const searchMatch = searchTerm === '' || 
+                                      cardTitle.includes(searchTermLower) || 
+                                      cardDescription.includes(searchTermLower);
+
+                    if (categoryMatch && searchMatch) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                        // 添加显示动画
+                        anime({
+                            targets: card,
+                            opacity: [0, 1],
+                            scale: [0.8, 1],
+                            duration: 400,
+                            delay: visibleCount * 50,
+                            easing: 'easeOutQuart'
+                        });
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // 显示/隐藏无结果提示
+                if (visibleCount === 0) {
+                    noResults.classList.remove('hidden');
+                } else {
+                    noResults.classList.add('hidden');
+                }
+            }
+        }
+
+        function toggleFavorite(btn) {
+            const card = btn.closest('.resource-card');
+            const title = card.dataset.title;
+            const description = card.dataset.description;
+            const category = card.dataset.category;
+            const link = card.querySelector('a').href;
+            
+            const favoriteIndex = favorites.findIndex(fav => fav.title === title);
+            
+            if (favoriteIndex > -1) {
+                // 移除收藏
+                favorites.splice(favoriteIndex, 1);
+                btn.classList.remove('active');
+            } else {
+                // 添加收藏
+                favorites.push({
+                    title: title,
+                    description: description,
+                    category: category,
+                    link: link
+                });
+                btn.classList.add('active');
+            }
+            
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            updateFavoritesDisplay();
+        }
+
+        function updateFavoritesDisplay() {
+            const favoritesGrid = document.getElementById('favorites-grid');
+            const noFavorites = document.getElementById('no-favorites');
+            
+            // 更新收藏按钮状态
+            document.querySelectorAll('.resource-card').forEach(card => {
+                const title = card.dataset.title;
+                const favoriteBtn = card.querySelector('.favorite-btn');
+                if (favorites.some(fav => fav.title === title)) {
+                    favoriteBtn.classList.add('active');
+                } else {
+                    favoriteBtn.classList.remove('active');
+                }
+            });
+            
+            // 显示收藏的资源
+            if (favorites.length > 0) {
+                noFavorites.style.display = 'none';
+                favoritesGrid.innerHTML = favorites.map(fav => `
+                    <div class="resource-card bg-white rounded-xl shadow-lg p-6">
+                        <div class="flex items-start justify-between mb-3">
+                            <h3 class="font-semibold text-gray-800 text-lg">${fav.title}</h3>
+                            <button class="favorite-btn text-red-500 active" onclick="removeFavorite('${fav.title}')">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">${fav.description}</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">${getCategoryName(fav.category)}</span>
+                            <a href="${fav.link}" target="_blank" class="text-green-700 hover:text-green-800 text-sm font-medium">
+                                访问网站 →
+                            </a>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                noFavorites.style.display = 'block';
+                favoritesGrid.innerHTML = '';
+            }
+        }
+
+        function removeFavorite(title) {
+            favorites = favorites.filter(fav => fav.title !== title);
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            updateFavoritesDisplay();
+            
+            // 更新原始卡片的状态
+            const originalCard = document.querySelector(`[data-title="${title}"]`);
+            if (originalCard) {
+                originalCard.querySelector('.favorite-btn').classList.remove('active');
+            }
+        }
+
+        function getCategoryName(category) {
+            const categoryNames = {
+                'journals': '学术期刊',
+                'databases': '数据库',
+                'tools': '研究工具',
+                'institutions': '研究机构',
+                'education': '教育资源',
+                'communities': '学术社区',
+                'software': '软件工具'
+            };
+            return categoryNames[category] || category;
+        }
+
+        function initMobileMenu() {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

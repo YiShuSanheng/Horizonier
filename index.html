@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horizonier university</title>
+    <!-- 农历转换库 -->
+    <script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #2D5016;
+            --warm-white: #FAFAFA;
+            --amber-gold: #D4A574;
+            --charcoal: #2C2C2C;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--warm-white);
+            color: var(--charcoal);
+        }
+        
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            background: linear-gradient(135deg, var(--primary-green), var(--amber-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-green);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: var(--primary-green);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(45, 80, 22, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-green), #3D6B1F);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(45, 80, 22, 0.2);
+        }
+        
+        .particle-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .splide__slide img {
+            border-radius: 12px;
+            object-fit: cover;
+        }
+        
+        .achievement-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- 生日彩蛋栏 (默认隐藏) -->
+    <!-- 生日彩蛋栏 (优化版：放在导航栏下方，配色优雅) -->
+    <div id="birthday-bar" class="hidden fixed top-16 w-full z-40 animate-fade-in-down">
+        <!-- 背景容器：使用淡米色背景，深绿色文字，底部加一条金线 -->
+        <div class="bg-[#FFF8F0] border-b border-[#D4A574] text-[#2D5016] py-4 shadow-sm relative">
+            <div class="max-w-7xl mx-auto px-4 flex items-center justify-center relative">
+                
+                <!-- 左侧装饰图标 -->
+                <span class="text-2xl mr-3 opacity-80">🌿</span>
+                
+                <!-- 文字内容：衬线字体，增加字间距 -->
+                <div class="text-center">
+                    <p class="text-lg md:text-xl font-medium tracking-wide" style="font-family: 'Playfair Display', serif;">
+                        <span class="italic text-[#D4A574]">Oct. 22</span> — 岁岁年年，万喜万般宜。祝Horizonier生日快乐。
+                    </p>
+                </div>
+                
+                <!-- 右侧装饰图标 -->
+                <span class="text-2xl ml-3 opacity-80">🌿</span>
+
+                <!-- 关闭按钮：设计得更隐蔽精细 -->
+                <button onclick="closeBirthdayBar()" class="absolute right-0 md:right-4 top-1/2 transform -translate-y-1/2 text-[#D4A574] hover:text-[#2D5016] transition-colors p-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- 粒子背景 -->
+    <div id="particle-container" class="particle-bg"></div>
+    
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-semibold text-gray-800">Hi！Horizonier
+                    </h1>
+                    <span class="ml-2 text-sm text-gray-500">非典型理科生，爱好摄影和生物</span>
+                </div>
+                
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="nav-link text-gray-700 hover:text-green-700">Singularity</a>
+                    <a href="blog.html" class="nav-link text-gray-700 hover:text-green-700">写 百卷书</a>
+                    <a href="gallery.html" class="nav-link text-gray-700 hover:text-green-700">行 千里路</a>
+                    <a href="resources.html" class="nav-link text-gray-700 hover:text-green-700">究 万物理</a>
+</div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-700 hover:text-green-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="nav-link text-gray-700 hover:text-green-700">首页</a>
+                    <a href="blog.html" class="nav-link text-gray-700 hover:text-green-700">写 百卷书</a>
+                    <a href="gallery.html" class="nav-link text-gray-700 hover:text-green-700">行 千里路</a>
+                    <a href="resources.html" class="nav-link text-gray-700 hover:text-green-700">究 万物理</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero区域 -->
+    <section id="home" class="pt-16 min-h-screen flex items-center relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="section-reveal">
+                    <h1 class="hero-title text-5xl lg:text-7xl font-bold mb-6 leading-tight">
+                    探究自然起源之美
+                    </h1>
+                    <p class="text-xl text-gray-600 mb-4 leading-relaxed">
+                    最大的爱好是和喜欢的人一起行走在旅途，记录下生活。
+                    </p>
+                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                    用科学的眼光发现自然之美，用艺术的方式诠释生物学奥秘。
+</p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="gallery.html" class="btn-primary px-8 py-4 rounded-full font-medium text-center">
+                            查看摄影作品
+                        </a>
+                        <a href="blog.html" class="border-2 border-green-700 text-green-700 px-8 py-4 rounded-full font-medium text-center hover:bg-green-700 hover:text-white transition-all duration-300">
+                            阅读博客
+                        </a>
+                    </div>
+                </div>
+                <div class="section-reveal">
+                    <div class="relative">
+                        <img src="resources/hero-biologist.png" alt="生物学家摄影师" class="w-full h-auto rounded-2xl shadow-2xl">
+                        <div class="absolute -bottom-6 -right-6 bg-amber-100 p-6 rounded-xl shadow-lg">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-green-800">15+</div>
+                                <div class="text-sm text-gray-600">年研究经验</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 摄影作品预览 -->
+    <section class="py-20 bg-gray-50"> 
+        <div class="text-center mt-12">
+        </div>
+    </section>
+
+    <!-- 个人成就 -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 section-reveal">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">学术成就</h2>
+                <p class="text-xl text-gray-600">科研道路上的里程碑</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 section-reveal">
+                <div class="achievement-card p-8 rounded-2xl text-center">
+                    <div class="text-4xl font-bold text-green-700 mb-2">25+</div>
+                    <div class="text-gray-600 mb-2">发表论文</div>
+                    <div class="text-sm text-gray-500">国际期刊</div>
+                </div>
+                
+                <div class="achievement-card p-8 rounded-2xl text-center">
+                    <div class="text-4xl font-bold text-green-700 mb-2">8</div>
+                    <div class="text-gray-600 mb-2">研究项目</div>
+                    <div class="text-sm text-gray-500">主持课题</div>
+                </div>
+                
+                <div class="achievement-card p-8 rounded-2xl text-center">
+                    <div class="text-4xl font-bold text-green-700 mb-2">150+</div>
+                    <div class="text-gray-600 mb-2">摄影作品</div>
+                    <div class="text-sm text-gray-500">获奖作品</div>
+                </div>
+                
+                <div class="achievement-card p-8 rounded-2xl text-center">
+                    <div class="text-4xl font-bold text-green-700 mb-2">5</div>
+                    <div class="text-gray-600 mb-2">国际合作</div>
+                    <div class="text-sm text-gray-500">交流项目</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-semibold mb-4">Hi！Horizonier</h3>
+                <p class="text-gray-400 mb-6">非典型理工科生</p>
+                <div class="flex justify-center space-x-6 mb-8">
+                    <a href="mailto:dr.chen@example.com" class="text-gray-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                </div>
+                <div class="border-t border-gray-700 pt-8">
+                    <p class="text-gray-400 text-sm">
+                        © 2025 Horizonier. 保留所有权利。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+  <script>
+    // --- 1. 生日栏控制逻辑 ---
+    function closeBirthdayBar() {
+        var bar = document.getElementById('birthday-bar');
+        var hero = document.getElementById('home');
+        
+        if(bar) {
+            // 动画淡出
+            anime({
+                targets: '#birthday-bar',
+                opacity: 0,
+                translateY: -20,
+                duration: 500,
+                easing: 'easeOutQuad',
+                complete: function() {
+                    bar.classList.add('hidden'); // 动画结束后真正隐藏
+                    bar.style.display = 'none';  // 确保不占位
+                }
+            });
+            
+            // 恢复 Hero 区域的位置
+            if(hero) {
+                hero.style.paddingTop = ''; // 恢复 CSS 默认值 (pt-16)
+            }
+        }
+    }
+
+    // --- 2. 核心初始化逻辑 ---
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // A. 处理生日彩蛋
+        try {
+            var now = new Date();
+            var lunar = Lunar.fromDate(now);
+            var lunarMonth = lunar.getMonth(); 
+            var lunarDay = lunar.getDay();
+
+            // 【测试模式】 true 时强制显示，测试完请改成: (lunarMonth === 10 && lunarDay === 22)
+            if (trlunarMonth === 10 && lunarDay === 22) { 
+                var bar = document.getElementById('birthday-bar');
+                var hero = document.getElementById('home');
+
+                if(bar) {
+                    bar.classList.remove('hidden');
+                    
+                    // 获取生日栏的实际高度，精确推移
+                    var barHeight = bar.offsetHeight;
+                    // 64px 是导航栏的高度 (h-16)，加上生日栏高度，再加一点间隙
+                    var totalPadding = 64 + barHeight + 20;
+
+                    if(hero) {
+                        // 强制给 Hero 区域加顶部内边距，把内容“挤”下来
+                        hero.style.paddingTop = totalPadding + 'px';
+                        hero.style.transition = 'padding 0.5s ease';
+                    }
+
+                    // 入场动画
+                    anime({
+                        targets: '#birthday-bar',
+                        translateY: [-20, 0],
+                        opacity: [0, 1],
+                        easing: 'easeOutQuad',
+                        duration: 800
+                    });
+                }
+            }
+        } catch (e) {
+            console.error("农历计算模块未加载或出错:", e);
+        }
+
+        // B. 【重要修复】让原本消失的内容重新显示出来
+        // 查找所有带有 .section-reveal 的元素
+        var revealElements = document.querySelectorAll('.section-reveal');
+        
+        // 使用 IntersectionObserver 监听滚动，当元素进入视野时显示它
+        var observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // 使用 Anime.js 执行淡入动画
+                    anime({
+                        targets: entry.target,
+                        opacity: [0, 1],
+                        translateY: [30, 0],
+                        easing: 'easeOutCubic',
+                        duration: 1000,
+                        delay: 200 // 稍微延迟一点点，更有质感
+                    });
+                    // 动画执行一次后取消监听
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1 // 元素出现 10% 时触发
+        });
+
+        // 开始监听每个隐藏的元素
+        revealElements.forEach(el => observer.observe(el));
+        
+        // 移动端菜单初始化（防止菜单点不开）
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+    });
+</script>
+</body>
+</html>

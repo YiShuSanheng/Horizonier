@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>写 百卷书 - Horizonier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #2D5016;
+            --warm-white: #FAFAFA;
+            --amber-gold: #D4A574;
+            --charcoal: #2C2C2C;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--warm-white);
+            color: var(--charcoal);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-green);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: var(--primary-green);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .blog-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .blog-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(45, 80, 22, 0.1);
+        }
+        
+        .category-tag {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .category-tag:hover {
+            transform: scale(1.05);
+        }
+        
+        .category-tag.active {
+            background-color: var(--primary-green);
+            color: white;
+        }
+        
+        .article-content {
+            line-height: 1.8;
+        }
+        
+        .article-content h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem 0;
+            color: var(--primary-green);
+        }
+        
+        .article-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.75rem 0;
+            color: var(--charcoal);
+        }
+        
+        .article-content p {
+            margin-bottom: 1rem;
+        }
+        
+        .article-content ul, .article-content ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+        
+        .article-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .article-content blockquote {
+            border-left: 4px solid var(--primary-green);
+            padding-left: 1rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+            color: #666;
+        }
+        
+        .article-content code {
+            background-color: #f4f4f4;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .article-content pre {
+            background-color: #f8f8f8;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        .sidebar-sticky {
+            position: sticky;
+            top: 100px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-semibold text-gray-800">Horizonier</h1>
+                    <span class="ml-2 text-sm text-gray-500">写 百卷书</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="nav-link text-gray-700 hover:text-green-700">Singularity</a>
+                    <a href="blog.html" class="nav-link text-gray-700 hover:text-green-700">写 百卷书</a>
+                    <a href="gallery.html" class="nav-link text-gray-700 hover:text-green-700">行 千里路</a>
+                    <a href="resources.html" class="nav-link text-gray-700 hover:text-green-700">究 万物理</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-700 hover:text-green-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="index.html" class="nav-link text-gray-700 hover:text-green-700">Singularity</a>
+                <a href="blog.html" class="nav-link text-gray-700 hover:text-green-700">写 百卷书</a>
+                <a href="gallery.html" class="nav-link text-gray-700 hover:text-green-700">行 千里路</a>
+                <a href="resources.html" class="nav-link text-gray-700 hover:text-green-700">究 万物理</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 页面标题 -->
+    <section class="pt-24 pb-12 bg-gradient-to-br from-green-50 to-amber-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-5xl font-bold text-gray-800 mb-4" style="font-family: 'Playfair Display', serif;">科研博客</h1>
+            <p class="text-xl text-gray-600">分享生物学研究的点滴感悟与摄影心得</p>
+        </div>
+    </section>
+
+    <!-- 主要内容区域 -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+            <!-- 侧边栏 -->
+            <aside class="lg:col-span-1">
+                <div class="sidebar-sticky">
+                    <!-- 文章分类 -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">文章分类</h3>
+                        <div class="space-y-2">
+                            <div class="category-tag active bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-medium" data-category="all">
+                                全部文章
+                            </div>
+                            <div class="category-tag bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-medium" data-category="research">
+                                近期研究
+                            </div>
+                            <div class="category-tag bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-medium" data-category="photography">
+                                世界之窗
+                            </div>
+                            <div class="category-tag bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-medium" data-category="fieldwork">
+                                股海沉浮
+                            </div>
+                            <div class="category-tag bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-medium" data-category="life">
+                                生活感悟
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 标签云 -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">热门标签</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs">肠道微生物</span>
+                            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs">海洋生物</span>
+                            <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs">追高被埋</span>
+                            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs">星空摄影</span>
+                            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs">野外星空</span>
+                            <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-xs">科研方法</span>
+                        </div>
+                    </div>
+
+                    <!-- 搜索框 -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">搜索文章</h3>
+                        <input type="text" id="search-input" placeholder="输入关键词..." 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500">
+                    </div>
+                </div>
+            </aside>
+
+            <!-- 文章列表 -->
+            <main class="lg:col-span-3">
+                <div id="blog-list" class="space-y-8">
+                    <!-- 文章1 -->
+                    <article class="blog-card bg-white rounded-xl shadow-lg overflow-hidden" data-category="research" data-title="显微镜下的奇妙世界" data-date="2024-12-01">
+                        <div class="md:flex">
+                            <div class="md:w-1/3">
+                                <img src="https://kimi-web-img.moonshot.cn/img/pngimg.com/e8fb9d918982447ba53cdb5fd236a582e9b33909.png" alt="显微镜观察" class="w-full h-64 md:h-full object-cover">
+                            </div>
+                            <div class="md:w-2/3 p-8">
+                                
+
+                <!-- 无结果提示 -->
+                <div id="no-results" class="hidden text-center py-16">
+                    <div class="text-gray-400 mb-4">
+                        <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">未找到相关文章</h3>
+                    <p class="text-gray-500">请尝试其他搜索关键词或分类筛选</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 文章详情模态框 -->
+    <div id="article-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+                <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                    <h2 id="modal-title" class="text-2xl font-bold text-gray-800"></h2>
+                    <button id="close-modal" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+                <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+                    <div id="modal-content" class="article-content">
+                        <!-- 文章内容将在这里动态加载 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-semibold mb-4">Hi！Horizonier</h3>
+                <p class="text-gray-400 mb-6">非典型理工科生</p>
+                <div class="flex justify-center space-x-6 mb-8">
+                    <a href="mailto:dr.chen@example.com" class="text-gray-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                </div>
+                <div class="border-t border-gray-700 pt-8">
+                    <p class="text-gray-400 text-sm">
+                        © 2025 Horizonier. 保留所有权利。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 博客功能
+        document.addEventListener('DOMContentLoaded', function() {
+            initBlog();
+            initMobileMenu();
+        });
+
+        function initBlog() {
+            const categoryTags = document.querySelectorAll('.category-tag');
+            const blogCards = document.querySelectorAll('.blog-card');
+            const searchInput = document.getElementById('search-input');
+            const noResults = document.getElementById('no-results');
+
+            // 分类筛选
+            categoryTags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    // 更新标签状态
+                    categoryTags.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const category = this.dataset.category;
+                    filterArticles(category, searchInput.value);
+                });
+            });
+
+            // 搜索功能
+            searchInput.addEventListener('input', function() {
+                const activeCategory = document.querySelector('.category-tag.active').dataset.category;
+                filterArticles(activeCategory, this.value);
+            });
+
+            function filterArticles(category, searchTerm) {
+                let visibleCount = 0;
+                
+                blogCards.forEach(card => {
+                    const cardCategory = card.dataset.category;
+                    const cardTitle = card.dataset.title.toLowerCase();
+                    const searchTermLower = searchTerm.toLowerCase();
+
+                    const categoryMatch = category === 'all' || cardCategory === category;
+                    const searchMatch = searchTerm === '' || cardTitle.includes(searchTermLower);
+
+                    if (categoryMatch && searchMatch) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                        // 添加显示动画
+                        anime({
+                            targets: card,
+                            opacity: [0, 1],
+                            translateY: [30, 0],
+                            duration: 400,
+                            delay: visibleCount * 100,
+                            easing: 'easeOutQuart'
+                        });
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // 显示/隐藏无结果提示
+                if (visibleCount === 0) {
+                    noResults.classList.remove('hidden');
+                } else {
+                    noResults.classList.add('hidden');
+                }
+            }
+        }
+
+        function openArticle(articleId) {
+            const modal = document.getElementById('article-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalContent = document.getElementById('modal-content');
+            
+            // 文章内容数据
+            const articles = {
+                1: {
+                    title: "显微镜下的奇妙世界",
+                    content: `
+                        <p>在生物学研究中，显微镜是我们探索微观世界的重要工具。每当我通过目镜观察那些肉眼看不见的生命活动时，都会被大自然的精妙设计所震撼。</p>
+                        
+                        <h2>显微镜技术的发展</h2>
+                        <p>从最初的光学显微镜到现在的电子显微镜，技术的进步让我们能够观察到越来越小的生命结构。这种技术的革新不仅推动了生物学的发展，也为我们这些研究者提供了更强大的观察工具。</p>
+                        
+                        <h3>细胞分裂的奇妙过程</h3>
+                        <p>观察细胞有丝分裂是我最喜欢的实验之一。从染色体的凝缩到纺锤体的形成，再到姐妹染色单体的分离，每一个步骤都展现着生命的精确性和复杂性。</p>
+                        
+                        <blockquote>
+                            "在显微镜下，每一个细胞都是一个完整的宇宙，充满了无尽的奥秘和美丽。"
+                        </blockquote>
+                        
+                        <h3>微生物世界的多样性</h3>
+                        <p>细菌、真菌、原生动物，每一种微生物都有其独特的形态和生活方式。通过显微镜观察它们的运动、摄食和繁殖行为，让我对生命的适应性有了更深刻的理解。</p>
+                        
+                        <h2>摄影技巧分享</h2>
+                        <p>显微摄影需要特殊的技巧。光线调节、焦距控制、曝光时间，每一个参数都需要精确把握。我通常使用以下设置来获得最佳的显微图像：</p>
+                        
+                        <ul>
+                            <li>使用环形光源提供均匀照明</li>
+                            <li>调整光圈获得最佳景深</li>
+                            <li>选择合适的滤光片增强对比度</li>
+                            <li>使用高分辨率相机捕捉细节</li>
+                        </ul>
+                        
+                        <p>通过这些技巧，我能够捕捉到微观世界中最美丽的瞬间，让更多人能够欣赏到肉眼看不见的生命之美。</p>
+                    `
+                },
+                2: {
+                    title: "深海生物考察记",
+                    content: `
+                        <p>上个月有幸参与了一次深海生物考察活动，这次经历让我对海洋生物的适应性有了更深刻的认识。在极端的压力和温度条件下，生命依然能够找到生存的方式。</p>
+                        
+                        <h2>深海环境的挑战</h2>
+                        <p>深海环境极其恶劣：巨大的水压、极低的温度、有限的氧气供应，以及完全的黑暗。然而，正是在这样的环境中，生物进化出了令人惊叹的适应机制。</p>
+                        
+                        <h3>生物发光的奇迹</h3>
+                        <p>在深海中，许多生物都具有发光能力。这种生物发光不仅用于吸引猎物和配偶，还用于迷惑天敌。观察这些发光生物在黑暗中的舞蹈，是一种难以描述的美妙体验。</p>
+                        
+                        <blockquote>
+                            "深海生物用光来书写自己的诗篇，在永恒的黑暗中创造着生命的奇迹。"
+                        </blockquote>
+                        
+                        <h3>特殊的生理适应</h3>
+                        <p>深海生物在生理结构上也表现出独特的适应性：</p>
+                        
+                        <ul>
+                            <li>柔软的身体结构抵抗高压</li>
+                            <li>特殊的酶系统适应低温环境</li>
+                            <li>高效的营养利用机制</li>
+                            <li>独特的繁殖策略</li>
+                        </ul>
+                        
+                        <h2>考察中的发现</h2>
+                        <p>在这次考察中，我们发现了几个新的物种，这些发现为深海生物多样性研究提供了宝贵的资料。每一个新物种的发现，都让我们对生命的韧性有了新的认识。</p>
+                        
+                        <h3>摄影记录的挑战</h3>
+                        <p>在深海环境中进行摄影记录面临着独特的挑战。特殊的防水设备、人工光源的使用、以及海洋生物的敏感性，都需要我们具备专业的技能和无限的耐心。</p>
+                        
+                        <p>这次考察不仅丰富了我的科研经验，也让我更加敬畏自然的力量和生命的顽强。</p>
+                    `
+                },
+                3: {
+                    title: "植物摄影的光影艺术",
+                    content: `
+                        <p>植物摄影是一门独特的艺术，它不仅需要技术技巧，更需要对植物生长规律的理解。通过不同的光线条件，我们可以展现植物的不同美感。</p>
+                        
+                        <h2>光线的选择</h2>
+                        <p>在植物摄影中，光线的选择至关重要。我通常会根据不同的拍摄目的选择不同的光线条件：</p>
+                        
+                        <h3>自然光的运用</h3>
+                        <p>清晨和傍晚的柔和光线最适合拍摄植物。这时的光线温暖而柔和，能够很好地展现植物的质感和色彩。正午的强烈阳光则可以用来创造强烈的对比效果。</p>
+                        
+                        <blockquote>
+                            "植物是光的雕塑家，用叶片和花瓣捕捉阳光，创造出无尽的美丽。"
+                        </blockquote>
+                        
+                        <h3>人工光源的控制</h3>
+                        <p>在实验室或室内环境中，我们需要使用人工光源。通过调节光源的角度、强度和色温，我们可以创造出理想的拍摄条件。</p>
+                        
+                        <h2>构图技巧</h2>
+                        <p>植物摄影的构图需要考虑植物的生长特性和美学特征：</p>
+                        
+                        <ul>
+                            <li>利用黄金分割法安排主体位置</li>
+                            <li>注意背景的选择和虚化</li>
+                            <li>突出植物的独特特征</li>
+                            <li>考虑季节变化对植物形态的影响</li>
+                        </ul>
+                        
+                        <h3>微距摄影的特殊性</h3>
+                        <p>微距植物摄影能够展现肉眼难以观察到的细节。花蕊的结构、叶片的纹理、露珠的晶莹，这些都是微距摄影的绝佳题材。</p>
+                        
+                        <h2>后期处理</h2>
+                        <p>适度的后期处理可以增强植物照片的艺术效果。调整色彩饱和度、对比度，以及适当的锐化，都能让植物的美感更加突出。</p>
+                        
+                        <p>通过植物摄影，我不仅记录了植物的美丽，也加深了对植物生长发育规律的理解。这种理解反过来又帮助我更好地进行生物学研究。</p>
+                    `
+                },
+                4: {
+                    title: "DNA测序技术的发展与应用",
+                    content: `
+                        <p>从桑格测序到下一代测序技术，DNA测序技术的发展彻底改变了生物学研究的格局。这项技术的进步不仅加速了基因组学研究，也为个性化医疗开辟了新的道路。</p>
+                        
+                        <h2>测序技术的演进</h2>
+                        <p>DNA测序技术的发展历程充满了创新和突破。每一次技术革新都带来了测序速度的提升和成本的降低。</p>
+                        
+                        <h3>第一代测序技术</h3>
+                        <p>桑格测序法是第一代测序技术的代表，它基于链终止法原理。虽然这种方法准确率高，但通量较低，成本较高，限制了其在大规模基因组学研究中的应用。</p>
+                        
+                        <blockquote>
+                            "技术的进步让我们能够以前所未有的速度解读生命的密码。"
+                        </blockquote>
+                        
+                        <h3>下一代测序技术</h3>
+                        <p>下一代测序技术的出现彻底改变了基因组学研究的格局。这些技术具有高通量、低成本的特点，使得大规模基因组测序成为可能。</p>
+                        
+                        <h2>技术原理对比</h2>
+                        <p>不同的测序技术基于不同的原理：</p>
+                        
+                        <ul>
+                            <li>桑格测序：基于链终止法</li>
+                            <li>454测序：基于焦磷酸测序</li>
+                            <li>Illumina测序：基于可逆终止子法</li>
+                            <li>Ion Torrent测序：基于半导体测序</li>
+                        </ul>
+                        
+                        <h3>应用领域</h3>
+                        <p>DNA测序技术在多个领域都有重要应用：</p>
+                        
+                        <h4>基础生物学研究</h4>
+                        <p>基因组测序帮助我们理解生物的进化关系、基因功能和调控机制。</p>
+                        
+                        <h4>医学诊断</h4>
+                        <p>通过基因测序可以诊断遗传疾病，预测疾病风险，指导个性化治疗。</p>
+                        
+                        <h4>农业育种</h4>
+                        <p>基因组信息可以指导作物改良，提高产量和抗性。</p>
+                        
+                        <h2>未来展望</h2>
+                        <p>随着测序技术的不断进步，我们可以期待更快速、更便宜、更准确的测序方法。这将为生物学研究和医学应用开辟更多可能性。</p>
+                        
+                        <p>作为一名生物学研究者，能够亲历并参与这个技术快速发展的时代，我感到非常幸运。这些技术不仅推动了科学的进步，也为解决人类面临的挑战提供了新的工具。</p>
+                    `
+                },
+                5: {
+                    title: "科研生活的平衡之道",
+                    content: `
+                        <p>作为一名科研工作者，如何在繁忙的实验和写作中找到生活的平衡点？这是我一直在思考的问题。通过摄影这个爱好，我学会了在严谨的科学研究中寻找艺术的灵感。</p>
+                        
+                        <h2>科研工作的挑战</h2>
+                        <p>科研工作往往充满了压力和挑战。实验的失败、论文的拒稿、经费的申请，每一个环节都可能带来挫折感。如何在面对这些挑战时保持积极的心态，是每个科研工作者都需要学习的课题。</p>
+                        
+                        <h3>时间管理的重要性</h3>
+                        <p>合理安排时间是保持工作生活平衡的关键。我通常会：</p>
+                        
+                        <ul>
+                            <li>制定详细的周计划和日计划</li>
+                            <li>为每个任务设定明确的时间限制</li>
+                            <li>留出足够的时间用于休息和娱乐</li>
+                            <li>学会说"不"，避免过度承诺</li>
+                        </ul>
+                        
+                        <blockquote>
+                            "平衡不是静态的状态，而是在不断变化中寻找最适合自己的节奏。"
+                        </blockquote>
+                        
+                        <h3>兴趣爱好的价值</h3>
+                        <p>摄影对我来说不仅是一种放松方式，更是激发科研灵感的源泉。通过镜头观察自然，我常常能够获得新的研究思路。</p>
+                        
+                        <h2>身心健康的重要性</h2>
+                        <p>长期的科研工作容易导致身心疲惫。保持良好的身体状态和心理健康对于科研工作的持续发展至关重要。</p>
+                        
+                        <h3>运动与休息</h3>
+                        <p>规律的运动不仅能够保持身体健康，还能够缓解工作压力。我每周都会安排固定的运动时间，这已经成为我生活中不可或缺的一部分。</p>
+                        
+                        <h3>社交与分享</h3>
+                        <p>与同事和朋友的交流不仅能够获得情感支持，还能够在学术交流中获得新的启发。定期的学术讨论和社交活动是保持科研活力的重要方式。</p>
+                        
+                        <h2>寻找意义感</h2>
+                        <p>当科研工作遇到困难时，回想自己选择这条道路的初衷，重新找到工作的意义感，这是保持长期动力的重要方法。</p>
+                        
+                        <p>科研生活虽然充满挑战，但只要我们能够找到适合自己的平衡方式，就能在这条道路上走得更远，也能享受到更多的乐趣。</p>
+                    `
+                }
+            };
+
+            const article = articles[articleId];
+            if (article) {
+                modalTitle.textContent = article.title;
+                modalContent.innerHTML = article.content;
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function initMobileMenu() {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+        }
+
+        // 关闭模态框
+        document.getElementById('close-modal').addEventListener('click', function() {
+            document.getElementById('article-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+        });
+
+        // 点击模态框外部关闭
+        document.getElementById('article-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+        });
+
+        // 键盘关闭
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('article-modal');
+                if (!modal.classList.contains('hidden')) {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
